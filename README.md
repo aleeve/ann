@@ -1,3 +1,6 @@
+# WIP
+WIP hackathon scaffolding for a browser based federated learning system using WASM
+
 ## Dev setup
 
 Install rust and wasm target:
