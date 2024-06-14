@@ -4,6 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-axum = "0.7.5"
+axum = { version = "0.7.5", features = ["ws"] }
+axum-extra = { version = "0.9.3", features = ["typed-header"] }
+futures = "0.3.30"
+headers = "0.4.0"
 proto = {path = "../proto/"}
 tokio = { version = "1.38.0", features = ["full"] }
+tokio-tungstenite = "0.23.0"
+tower = "0.4.13"
+tower-http = { version = "0.5.2", features = ["fs", "trace"] }
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
