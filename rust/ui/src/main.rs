@@ -1,5 +1,6 @@
 mod app;
 mod components;
+mod model;
 
 use console_error_panic_hook;
 use leptos::*;

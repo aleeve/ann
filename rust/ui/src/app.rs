@@ -1,11 +1,13 @@
-use crate::components::network::Connection;
+use crate::components::network::Worker;
+use crate::components::storage::StoreData;
 use leptos::*;
-use leptos_use::{use_websocket, UseWebsocketReturn};
 
 #[component]
 pub fn App() -> impl IntoView {
+    let (a, _) = create_signal("hej".to_string());
     view! {
-        <Connection/>
+        <StoreData key=a/>
+        <Worker />
         <div>{"HEj"}</div>
     }
 }

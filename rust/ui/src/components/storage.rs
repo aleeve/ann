@@ -6,6 +6,7 @@ use serde_json::Value;
 use serde_wasm_bindgen::Serializer;
 use wasm_bindgen::JsValue;
 
+
 async fn create_database() -> Result<Database, Error> {
     // Get a factory instance from global scope
     let factory = Factory::new()?;
@@ -30,7 +31,6 @@ async fn create_database() -> Result<Database, Error> {
 
         // Prepare index params
         let mut index_params = IndexParams::new();
-        index_params.unique(true);
 
         // Create index on object store
         store
@@ -60,7 +60,7 @@ async fn add_data(database: &Database) -> Result<JsValue, Error> {
     let id = store
         .add(
             &employee.serialize(&Serializer::json_compatible()).unwrap(),
-            None,
+            None
         )
         .unwrap()
         .await?;
@@ -92,10 +92,23 @@ async fn get_data(database: &Database, id: JsValue) -> Result<Option<Value>, Err
 
     Ok(stored_employee)
 }
+async fn hej(a:String) -> () {
+    let db = create_database().await.unwrap();
+    match add_data(&db).await{
+        Ok(id) => {
+            let e = get_data(&db, id).await;
+            log!(format!("{e:?}"));
+            log!(a);
+        },
+        Err(e) => log!(format!("{e:?}"))
+    }
+    ()
+}
 
 #[component]
-fn StoreData(key: ReadSignal<String>) -> impl IntoView {
+pub fn StoreData(key: ReadSignal<String>) -> impl IntoView {
     log!("Storing data");
+    let db = create_resource(move || key.get(), hej);
 
     view! {"hej"}
 }
