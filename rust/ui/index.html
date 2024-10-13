@@ -2,9 +2,15 @@
 <html>
 
 <head>
+  <base data-trunk-public-url />
+
+  <link data-trunk rel="scss" href="styling.scss">
+  <link data-trunk rel="copy-file" href="tslibs.js" />
+  <link data-trunk rel="copy-file" href="assets/logo.webp" />
+  <script type="module" src="tslibs.js"></script>
+
   <link data-trunk rel="rust" data-wasm-opt="z" data-type="worker" data-bin="worker" data-weak-refs data-loader-shim />
   <link data-trunk rel="rust" data-wasm-opt="z" data-bin="ui" />
-
 </head>
 
 <body></body>

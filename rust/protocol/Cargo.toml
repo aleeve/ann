@@ -1,0 +1,27 @@
+[package]
+name = "protocol"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+prost = {version= "0.12.6"}
+tonic = {version="0.11.0",optional=true}
+tonic-web = {version="0.11.0"}
+
+[build-dependencies]
+tonic-build = { version = "0.11.0" , features = ["prost",] }
+prost-build = "0.13.3"
+
+
+[features]
+grpc = ["dep:tonic"]
+
+#[build-dependencies]
+# tonic-build = { version = "0.11.0" , features = [
+#     "prost",
+# ], optional=true }
+
+# [features]
+# grpc = ["dep:tonic-build", "dep:prost", "dep:tonic"]
+
+

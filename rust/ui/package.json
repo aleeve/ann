@@ -1,0 +1,19 @@
+{
+  "name": "livet_frontend",
+  "version": "0.1.0",
+  "description": "HACKS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alex Evert",
+  "dependencies": {
+    "@atproto/api": "^0.13.9",
+    "bulma": "^0.7.2",
+    "bulmaswatch": "^0.8.1",
+    "typescript": "^5.6.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

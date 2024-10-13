@@ -9,7 +9,7 @@ axum-extra = { version = "0.9.3", features = ["typed-header"] }
 futures = "0.3.30"
 headers = "0.4.0"
 prost = "0.12.6"
-proto = {path = "../proto/"}
+protocol = {path = "../protocol/", features= ["grpc"]}
 tokio = { version = "1.38.0", features = ["full"] }
 tokio-stream = "0.1.15"
 tokio-tungstenite = "0.23.0"

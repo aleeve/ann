@@ -1,0 +1,16 @@
+[watch]
+watch = ["src", "index.html","package.json", "styling.scss"]
+
+[[hooks]]
+stage = "pre_build"
+command = "npm"
+command_arguments = ["install"]
+
+[[hooks]]
+stage = "pre_build"
+command = "npx"
+command_arguments = [ "esbuild", "--bundle", "src/typescript/lib.ts", "--outfile=tslibs.js"]
+
+[[copy]]
+src = "tslibs.js"
+dest = "dist/"

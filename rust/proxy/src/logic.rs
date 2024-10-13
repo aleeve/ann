@@ -1,6 +1,6 @@
 use axum::extract::ws::{Message, WebSocket};
 use prost::Message as GrpcMessage;
-use proto::flwr::{flower_service_client::FlowerServiceClient, ClientMessage};
+use protocol::flwr::{flower_service_client::FlowerServiceClient, ClientMessage};
 
 use std::net::SocketAddr;
 use tokio::sync::mpsc;
@@ -26,6 +26,7 @@ pub async fn handle_socket(socket: WebSocket, who: SocketAddr) {
         let mut count: u64 = 0;
         while let Some(Ok(message)) = ws_receiver.next().await {
             if let Message::Binary(data) = message {
+                // rx is wired into the out stream to the server
                 if tx.send(data).await.is_err() {
                     break;
                 }

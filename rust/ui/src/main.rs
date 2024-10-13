@@ -1,12 +1,11 @@
-mod app;
-mod components;
-mod model;
+mod logic;
+mod view;
 
 use console_error_panic_hook;
 use leptos::*;
 use std::panic;
 
-use crate::app::App;
+use crate::view::app::App;
 
 fn main() {
     // Add nice console stacktraces
