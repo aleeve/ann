@@ -18,11 +18,10 @@ pub fn StoreData(
                 create_resource(
                     move || key.get(), 
                     move |key : String|{ 
-                        gloo_console::log!("Hmmaaa");
                         let db = db.clone();
                         async move {
                             let data = json!({"hash": 12, "value": 123});
-                            db.clone().add_data(key.as_str(), &data).await.expect("Error?");
+                            db.add_data(key.as_str(), &data).await.expect("Error?");
                         }
                     });
             },

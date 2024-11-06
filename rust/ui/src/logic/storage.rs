@@ -89,7 +89,6 @@ async fn add_data(database: &IdbcDatabase, store: &str, value: &Value) -> Result
 
     // Get the object store
     let store = transaction.object_store(store).unwrap();
-    gloo_console::log!(value.to_string());
     let index = store.index("hash").expect("The hash index should have been created at start");
 
     // Check if data already exists
