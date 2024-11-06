@@ -1,15 +1,45 @@
-use gloo_console::{log,warn};
+use std::sync::Arc;
+
+use gloo::utils::format::JsValueSerdeExt;
+use gloo_console::{log, warn};
 use leptos::*;
-use idb::{Database, DatabaseEvent, Error, Factory, IndexParams, KeyPath, ObjectStoreParams, Request, TransactionMode};
-use serde::Serialize;
+use idb::{Database as IdbcDatabase, DatabaseEvent, Error, Factory, IndexParams, KeyPath, ObjectStoreParams, TransactionMode};
 use serde_json::{Value, json};
-use serde_wasm_bindgen::Serializer;
 use wasm_bindgen::JsValue;
 
 const DB_NAME: &str = "training";
 const VERSION: Option<u32> = Some(1);
 
-async fn create_database(stores: Vec<String>) -> Result<Database, Error> {
+#[derive(Debug, Clone)]
+pub struct Database {
+    db: Arc<IdbcDatabase>,
+    name: String,
+    version: u32
+
+}
+
+impl Database {
+    pub async fn new(stores: Vec<String>) -> Result<Database, Error>{
+        let db = create_database(stores).await?;
+        let mdb = Database {
+            db: Arc::new(db),
+            name: "Training".into(),
+            version: 1,
+        };
+        Ok(mdb)
+    }
+
+    pub async fn get_data(&self ,store:&str, hash: &str) -> Result<Value, Error> {
+        get_data(&self.db, store, hash).await
+    }
+
+    pub async fn add_data(&self, store: &str, value: &Value) -> Result<JsValue, Error> {
+        add_data(&self.db, store, value).await
+    }
+
+}
+
+async fn create_database(stores: Vec<String>) -> Result<IdbcDatabase, Error> {
     let factory = Factory::new()?;
     let mut open_request = factory.open(DB_NAME, VERSION).unwrap();
     open_request.on_upgrade_needed(|event| {
@@ -28,7 +58,7 @@ async fn create_database(stores: Vec<String>) -> Result<Database, Error> {
     open_request.await
 }
 
-fn add_objectstore(database: &Database, name: &str, index: &str) -> Result<(), Error>{
+fn add_objectstore(database: &IdbcDatabase, name: &str, index: &str) -> Result<(), Error>{
     let mut store_params = ObjectStoreParams::new();
     store_params.auto_increment(true);
     store_params.key_path(Some(KeyPath::new_single("id")));
@@ -51,26 +81,31 @@ fn add_objectstore(database: &Database, name: &str, index: &str) -> Result<(), E
 }
 
 
-async fn add_data(database: &Database, store: &str, value: &mut Value) -> Result<JsValue, Error> {
+async fn add_data(database: &IdbcDatabase, store: &str, value: &Value) -> Result<JsValue, Error> {
+    let mut data = value.clone();
+
     // Create a read-write transaction
     let transaction = database.transaction(&[store], TransactionMode::ReadWrite)?;
 
     // Get the object store
     let store = transaction.object_store(store).unwrap();
-    let hash = value.get("hash").unwrap().as_str().unwrap();
-    let v = store.index("hash")?.get(JsValue::from(hash)).unwrap().await.unwrap();
-    if v.is_some() {
-        let v = serde_wasm_bindgen::from_value::<Value>(v.unwrap()).ok();
-        match v {
-            Some(v) => {value.as_object_mut().unwrap().insert("id".to_string(), v.get("id").unwrap().to_owned());},
-            None => ()
+    gloo_console::log!(value.to_string());
+    let index = store.index("hash").expect("The hash index should have been created at start");
+
+    // Check if data already exists
+    let hash = JsValue::from_serde(&value["hash"]).unwrap();
+    if let Some(val) = index.get(hash).unwrap().await.unwrap() {
+        if let Ok(val) = serde_wasm_bindgen::from_value::<Value>(val){
+            let key = val["id"].as_i64().unwrap();
+            data.as_object_mut().unwrap().insert("id".to_string(), key.into());
         }
     };
+    
 
     // Add data to object store
     let id = store
         .put(
-            &value.serialize(&Serializer::json_compatible()).unwrap(),
+            &JsValue::from_serde(&data).unwrap(),
             None
         )
         .unwrap()
@@ -82,7 +117,7 @@ async fn add_data(database: &Database, store: &str, value: &mut Value) -> Result
     Ok(id)
 }
 
-async fn get_data(database: &Database, store:&str, hash: &str) -> Result<Value, Error> {
+async fn get_data(database: &IdbcDatabase, store:&str, hash: &str) -> Result<Value, Error> {
     // Create a read-only transaction
     let transaction = database
         .transaction(&[store], TransactionMode::ReadOnly)
