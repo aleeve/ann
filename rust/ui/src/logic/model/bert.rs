@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use candle_core::{DType, Device, Tensor};
 use candle_nn::VarBuilder;
 use candle_transformers::models::bert::{BertModel, Config};
@@ -48,17 +50,23 @@ impl Model {
     }
 
     fn collate(&mut self, tokens: Vec<Encoding>) -> Result<(Tensor, Tensor, Tensor), JsError> {
-        let token_ids: Vec<Tensor> = tokens
+        let (token_ids, mask) = tokens
             .iter()
             .map(|tokens| {
-                let tokens = tokens.get_ids().to_vec();
-                Tensor::new(tokens.as_slice(), &self.device)
+                let mask = tokens.get_attention_mask();
+                let tokens = tokens.get_ids();
+                Ok((
+                    Tensor::new(tokens, &self.device)?,
+                    Tensor::new(mask, &self.device)?,
+                ))
             })
-            .collect::<Result<Vec<_>, _>>()?;
+            .collect::<Result<(Vec<Tensor>, Vec<Tensor>), _>>()
+            .map_err(|e: candle_core::Error| JsError::new(&e.to_string()))?;
 
         let token_ids = Tensor::stack(&token_ids, 0)?;
+        let mask = Tensor::stack(&mask, 0)?;
         let token_type_ids = token_ids.zeros_like()?;
-        todo!();
+        Ok((token_ids, mask, token_type_ids))
     }
 
     pub fn embed(&mut self, input: Params) -> Result<Tensor, JsError> {
