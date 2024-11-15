@@ -4,13 +4,16 @@ use leptos_router::*;
 
 use crate::logic::storage::Database;
 use crate::view::components::navbar::NavBar;
-use crate::view::components::worker::get_square_worker;
+use crate::view::components::workers::{get_square_worker, get_atproto_worker};
 use crate::view::pages::{Home, Label};
 
 #[component]
 pub fn App() -> impl IntoView {
     // Setup atproto worker
-    let (input, set_input) = create_signal::<Vec<String>>(vec!());
+    let (input, set_input) = create_signal::<Vec<String>>(vec!("test".to_string()));
+    let result = get_atproto_worker(input);
+    provide_context(set_input);
+    provide_context(result);
 
     // Setup embedding worker
     let (input, set_input) = create_signal(2);

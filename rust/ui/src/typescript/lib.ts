@@ -28,6 +28,7 @@ async function getActor(did: string): Promise<Actor> {
     },
   );
 
+  console.log(texts)
   var texts = texts.data.records.map((rec) => rec.value.text);
   return { did, texts }
 }
@@ -44,11 +45,12 @@ async function getFollows(did: string): Promise<Follow> {
       },
     },
   )
+  console.log(response)
 
   let follows = response.data.records.map((rec) => rec.value.subject);
   return { did, follows }
 }
 
 // Expose the function to the global scope
-(window as any).getActor = getActor;
-(window as any).getFollows = getFollows;
+(globalThis as any).getActor = getActor;
+(globalThis as any).getFollows = getFollows;

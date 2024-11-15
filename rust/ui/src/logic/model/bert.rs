@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use candle_core::{DType, Device, Tensor};
 use candle_nn::VarBuilder;
 use candle_transformers::models::bert::{BertModel, Config};
@@ -66,7 +64,7 @@ impl Model {
         let token_ids = Tensor::stack(&token_ids, 0)?;
         let mask = Tensor::stack(&mask, 0)?;
         let token_type_ids = token_ids.zeros_like()?;
-        Ok((token_ids, mask, token_type_ids))
+        Ok((token_ids, token_type_ids, mask))
     }
 
     pub fn embed(&mut self, input: Params) -> Result<Tensor, JsError> {

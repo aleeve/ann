@@ -28,3 +28,4 @@ wasm-bindgen-futures = "0.4.43"
 leptos-use = "0.13.5"
 codee = { version = "0.2.0", features = ["msgpack_serde"] }
 leptos_router = { version = "0.6.15", features = ["csr"] }
+js-sys = "0.3.72"
