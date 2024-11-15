@@ -1,4 +1,4 @@
-# WIP
+# Approximate Nicest Neighbor
 WIP hackathon scaffolding for a browser based federated learning system using WASM
 
 ## Dev setup
