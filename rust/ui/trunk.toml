@@ -9,7 +9,7 @@ command_arguments = ["install"]
 [[hooks]]
 stage = "pre_build"
 command = "npx"
-command_arguments = [ "esbuild", "--bundle", "src/typescript/lib.ts", "--outfile=tslibs.js"]
+command_arguments = [ "esbuild","--minify", "--bundle", "src/typescript/lib.ts", "--outfile=tslibs.js"]
 
 [[copy]]
 src = "tslibs.js"
